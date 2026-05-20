@@ -128,3 +128,11 @@
     @apply font-sans;
   }
 }
+
+/* TradingView Advanced Chart Widget Styles */
+.tradingview-widget-container {
+  position: relative;
+  background-color: #141414 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
