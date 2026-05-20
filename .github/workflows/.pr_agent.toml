@@ -1,0 +1,10 @@
+[config]
+model="groq/llama-3.3-70b-versatile"
+
+[pr_reviewer]
+require_score_review=true
+suggestions_score_threshold=7
+
+[pr_description]
+publish_labels=true
+use_bullet_points=true
