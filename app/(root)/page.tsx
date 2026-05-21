@@ -1,4 +1,3 @@
-import Image from "next/image";
 import TradingViewWidget from "./_components/trading-view-widget";
 import {
   HEATMAP_WIDGET_CONFIG,
