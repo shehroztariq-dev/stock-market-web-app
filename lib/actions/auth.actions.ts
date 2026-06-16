@@ -2,7 +2,7 @@
 
 import { inngest } from "@/lib/inngest/client";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth";
+import { auth } from "@/lib/auth";
 
 export const signUpWithEmail = async ({
   email,
