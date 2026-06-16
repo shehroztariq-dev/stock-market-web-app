@@ -12,16 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import NavItems from "./nav-items";
+import { signOut } from "@/lib/actions/auth.actions";
 
-export default function UserDropDown() {
+export default function UserDropDown({ user }: { user: User }) {
   const router = useRouter();
 
-  const user = {
-    name: "Shehroz",
-    email: "shehroz.dev@gmail.com",
-  };
-
   const handleSignOut = async () => {
+    await signOut();
     router.push("/sign-in");
   };
 

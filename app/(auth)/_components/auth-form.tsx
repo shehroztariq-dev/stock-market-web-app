@@ -20,7 +20,10 @@ import {
   PREFERRED_INDUSTRIES,
   RISK_TOLERANCE_OPTIONS,
 } from "@/lib/constants";
-import CountryInput, { CountrySelectField } from "./country-select-field";
+import { CountrySelectField } from "./country-select-field";
+import { signInWithEmail, signUpWithEmail } from "@/lib/actions/auth.actions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // import { authClient } from "@/lib/auth/auth-client";
 // import { redirect } from "next/navigation";
@@ -31,10 +34,9 @@ type AuthFormProps = {
 
 // AuthForm.tsx
 export default function AuthForm({ type }: AuthFormProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
   // const { data: user, isPending } = authClient.useSession(); // 👈 destructure
-
   const formSchema = authFormSchema(type);
   const {
     register,
@@ -57,27 +59,20 @@ export default function AuthForm({ type }: AuthFormProps) {
     setIsLoading(true);
     try {
       console.log(data);
-      // if (type === "sign-up") {
-      //   await authClient.signUp.email({
-      //     fullName: data.fullName,
-      //     email: data.email,
-      //     password: data.password,
-      //     // These extra fields are forwarded to ctx.body in the plugin
-      //     country: "US",
-      //     investmentGoals: "Growth",
-      //     riskTolerance: "Medium",
-      //     preferredIndustry: "Technology",
-      //   });
-      // }
-      // if (type === "sign-in") {
-      //   await authClient.signIn.email({
-      //     email: data.email,
-      //     password: data.password,
-      //   });
-      //   redirect("/");
-      // }
-    } catch (error) {
-      console.log(error);
+      if (type === "sign-up") {
+        const result = await signUpWithEmail(data);
+        if (result.success) router.push("/");
+      }
+      if (type === "sign-in") {
+        const result = await signInWithEmail(data);
+        if (result.success) router.push("/");
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error("Sign up failed", {
+        description:
+          e instanceof Error ? e.message : "Failed to create an account",
+      });
     } finally {
       setIsLoading(false);
     }

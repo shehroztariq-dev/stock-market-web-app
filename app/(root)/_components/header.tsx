@@ -4,7 +4,7 @@ import React from "react";
 import NavItems from "./nav-items";
 import UserDropDown from "./user-dropdown";
 
-export default function Header() {
+export default function Header({ user }: { user: User }) {
   return (
     <header className="sticky top-0 bg-accent z-10">
       <div className="px-10 py-4 flex items-center justify-between">
@@ -15,7 +15,7 @@ export default function Header() {
         <nav className="hidden md:block">
           <NavItems />
         </nav>
-        <UserDropDown />
+        <UserDropDown user={user} />
       </div>
     </header>
   );

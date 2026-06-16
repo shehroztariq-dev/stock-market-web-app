@@ -1,0 +1,27 @@
+name: PR-Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr_agent_job:
+    # Only run on your own branches
+    if: github.actor == 'shehroztariq-dev'
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: write
+      issues: write
+
+    steps:
+      - name: PR Agent
+        uses: qodo-ai/pr-agent@main
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          CONFIG.MODEL: groq/llama3-70b-8192
+          GROQ.KEY: ${{ secrets.GROQ_KEY }}
