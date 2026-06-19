@@ -136,14 +136,6 @@ growix/
 └── public/           # Static assets
 ```
 
-## Deployment
-
-The easiest way to deploy Growix is via the [Vercel Platform](https://vercel.com/new), the creators of Next.js. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.
-
-## Contributing
-
-Contributions, issues, and feature requests are welcome. Feel free to open a pull request or file an issue.
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
