@@ -1,8 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Growix 📈
+
+**Growix** is a real-time stock market tracking platform that delivers live price updates, personalized alerts, and in-depth company insights — helping users make informed investment decisions.
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
+
+---
+
+## Features
+
+- **Real-time stock tracking** — Live price updates so users always have current market data.
+- **Personalized alerts** — Custom notifications based on price thresholds and user-defined criteria, powered by background jobs.
+- **Company insights** — Detailed company data to support research and decision-making.
+- **Secure authentication** — User accounts and sessions handled via BetterAuth.
+- **Modern, responsive UI** — Built with Shadcn UI components and Tailwind CSS.
+
+## Tech Stack
+
+| Layer                    | Technology                                   |
+| ------------------------ | -------------------------------------------- |
+| Framework                | [Next.js](https://nextjs.org)                |
+| Language                 | [TypeScript](https://www.typescriptlang.org) |
+| Styling                  | [Tailwind CSS](https://tailwindcss.com)      |
+| UI Components            | [Shadcn UI](https://ui.shadcn.com)           |
+| Database                 | [MongoDB](https://www.mongodb.com)           |
+| Background Jobs / Alerts | [Inngest](https://www.inngest.com)           |
+| Authentication           | [BetterAuth](https://www.better-auth.com)    |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A MongoDB connection string (local or [Atlas](https://www.mongodb.com/atlas))
+
+### Installation
+
+```bash
+git clone https://github.com/<your-username>/growix.git
+cd growix
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory and add the following:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+BETTER_AUTH_SECRET=your_auth_secret
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+INNGEST_EVENT_KEY=your_inngest_event_key
+INNGEST_SIGNING_KEY=your_inngest_signing_key
+```
+
+> Update these values to match your own credentials and services.
+
+### Run the development server
 
 ```bash
 npm run dev
@@ -10,27 +66,29 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+growix/
+├── app/              # Next.js app router pages and layouts
+├── components/       # Reusable UI components (Shadcn-based)
+├── lib/              # Utilities, database, and auth config
+├── inngest/          # Background jobs and alert functions
+└── public/           # Static assets
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+The easiest way to deploy Growix is via the [Vercel Platform](https://vercel.com/new), the creators of Next.js. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions, issues, and feature requests are welcome. Feel free to open a pull request or file an issue.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [MIT License](LICENSE).
