@@ -41,20 +41,40 @@
 ```bash
 git clone https://github.com/<your-username>/growix.git
 cd growix
-npm install
+pnpm install
 ```
 
-### Environment Variables
+## Environment Variables
 
 Create a `.env.local` file in the root directory and add the following:
 
 ```env
+# Application
+NODE_ENV=development
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Database
 MONGODB_URI=your_mongodb_connection_string
-BETTER_AUTH_SECRET=your_auth_secret
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-INNGEST_EVENT_KEY=your_inngest_event_key
-INNGEST_SIGNING_KEY=your_inngest_signing_key
+
+# Authentication (BetterAuth)
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=http://localhost:3000
+
+# AI Integration
+GEMINI_API_KEY=your_gemini_api_key
+
+# Inngest
+INNGEST_DEV=true
+
+# Email Service (Nodemailer)
+NODEMAILER_EMAIL=your_email@example.com
+NODEMAILER_PASSWORD=your_email_password
+
+# Stock Market Data
+NEXT_PUBLIC_FINNHUB_API_KEY=your_finnhub_api_key
 ```
+
+Update these values with your own credentials before running the application.
 
 > Update these values to match your own credentials and services.
 
@@ -69,6 +89,41 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+
+### Running Inngest Locally
+
+Start the Next.js development server:
+
+```bash
+npm run dev
+```
+
+In a separate terminal, start the Inngest development server:
+
+```bash
+npx inngest-cli@latest dev
+```
+
+Or, if you have the CLI installed globally:
+
+```bash
+inngest dev
+```
+
+The Inngest Dev Server will typically be available at:
+
+```text
+http://localhost:8288
+```
+
+Make sure your Inngest functions endpoint is configured correctly in your application (for example, `/api/inngest` if you're using Next.js App Router).
+
+Once both servers are running:
+
+- Next.js app → `http://localhost:3000`
+- Inngest Dev Server → `http://localhost:8288`
+
+You can trigger events from your application and monitor function executions in the Inngest dashboard.
 
 ## Project Structure
 
