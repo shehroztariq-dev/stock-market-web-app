@@ -104,34 +104,38 @@ export default function AuthForm({ type }: AuthFormProps) {
                     name="fullName"
                     placeholder="ex:John Doe"
                   />
-                  <CountrySelectField
-                    name="country"
-                    label="Country"
-                    control={control}
-                    error={errors.country}
-                    required
-                  />
-                  <CustomInput
-                    control={control}
-                    label="Risk Tolerance"
-                    name="riskTolerance"
-                    type="select"
-                    options={RISK_TOLERANCE_OPTIONS}
-                  />
-                  <CustomInput
-                    control={control}
-                    label="Investment Goal"
-                    name="investmentGoals"
-                    type="select"
-                    options={INVESTMENT_GOALS}
-                  />
-                  <CustomInput
-                    control={control}
-                    label="Preffered Industry"
-                    name="preferredIndustry"
-                    type="select"
-                    options={PREFERRED_INDUSTRIES}
-                  />
+                  <div className="grid  md:grid-cols-2 grid-cols-1 gap-2">
+                    <CountrySelectField
+                      name="country"
+                      label="Country"
+                      control={control}
+                      error={errors.country}
+                      required
+                    />
+                    <CustomInput
+                      control={control}
+                      label="Preffered Industry"
+                      name="preferredIndustry"
+                      type="select"
+                      options={PREFERRED_INDUSTRIES}
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+                    <CustomInput
+                      control={control}
+                      label="Risk Tolerance"
+                      name="riskTolerance"
+                      type="select"
+                      options={RISK_TOLERANCE_OPTIONS}
+                    />
+                    <CustomInput
+                      control={control}
+                      label="Investment Goal"
+                      name="investmentGoals"
+                      type="select"
+                      options={INVESTMENT_GOALS}
+                    />
+                  </div>
                 </>
               )}
               {/* Email Input */}
