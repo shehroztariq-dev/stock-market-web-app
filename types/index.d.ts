@@ -215,6 +215,10 @@ declare global {
     threshold: number;
     changePercent?: number;
   };
+
+  type UserForNewsEmail = Awaited<
+    ReturnType<typeof getAllUsersForNewsEmail>
+  >[number];
 }
 
 export {};

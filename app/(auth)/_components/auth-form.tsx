@@ -79,7 +79,7 @@ export default function AuthForm({ type }: AuthFormProps) {
   };
 
   return (
-    <div className="flex h-screen items-center mx-10">
+    <div className="flex justify-center max-w-full items-center mt-4">
       <div className="flex flex-col gap-4 w-full max-w-xl">
         <header className="flex flex-col gap-4">
           <BrandLogo />

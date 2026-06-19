@@ -1,4 +1,4 @@
-"user server";
+"use server";
 
 import { connectToDatabase } from "@/db/mongoose";
 

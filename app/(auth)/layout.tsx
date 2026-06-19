@@ -8,6 +8,6 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   const session = await auth?.api.getSession({ headers: await headers() });
-  if (!session?.user) redirect("/");
-  return <main>{children}</main>;
+  if (session?.user) redirect("/");
+  return <main className="min-h-screen">{children}</main>;
 }

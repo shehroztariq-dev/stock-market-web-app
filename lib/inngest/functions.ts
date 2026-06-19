@@ -1,7 +1,12 @@
+// lib/inngest/functions.ts
+
 import { getAllUsersForNewsEmail } from "../actions/user.actions";
-import { sendWelcomeEmail } from "../nodemailer";
+import { sendNewsSummaryEmail, sendWelcomeEmail } from "../nodemailer";
 import { inngest } from "./client";
-import { PERSONALIZED_WELCOME_EMAIL_PROMPT } from "./prompts";
+import {
+  NEWS_SUMMARY_EMAIL_PROMPT,
+  PERSONALIZED_WELCOME_EMAIL_PROMPT,
+} from "./prompts";
 
 import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import { getNews } from "@/lib/actions/finnhub.actions";
@@ -14,6 +19,7 @@ export const sendSignUpEmail = inngest.createFunction(
     // triggers are now inside the config object
     triggers: [{ event: "app/user.created" }],
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async ({ event, step }: any) => {
     // Build user profile for the prompt
     const userProfile = `
@@ -60,8 +66,9 @@ export const sendSignUpEmail = inngest.createFunction(
 export const sendDailyNewsSummary = inngest.createFunction(
   {
     id: "daily-use-summary",
+    triggers: [{ event: "app/send.daily.news" }, { cron: "0 12 * * *" }],
   },
-  [{ event: "app/send.daily.news" }, { cron: "0 12 * * *" }],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async ({ step }: any) => {
     // Step #1: Get all users for news delivery
     const users = await step.run("get-all-users", getAllUsersForNewsEmail);
@@ -120,7 +127,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
 
         userNewsSummaries.push({ user, newsContent });
       } catch (e) {
-        console.error("Failed to summarize news for : ", user.email);
+        console.error("Failed to summarize news for : ", user.email, e);
         userNewsSummaries.push({ user, newsContent: null });
       }
     }

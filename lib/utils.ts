@@ -144,9 +144,8 @@ export const authFormSchema = (type: string) =>
     // sign up
     fullName: type === "sign-in" ? z.string().optional() : z.string().min(3),
     country: type === "sign-in" ? z.string().optional() : z.string().max(50),
-    city: type === "sign-in" ? z.string().optional() : z.string().max(50),
     investmentGoals:
-      type === "sign-in" ? z.string().optional() : z.string().min(2).max(2),
+      type === "sign-in" ? z.string().optional() : z.string().min(2).max(50),
     riskTolerance:
       type === "sign-in" ? z.string().optional() : z.string().min(3).max(6),
     preferredIndustry:
