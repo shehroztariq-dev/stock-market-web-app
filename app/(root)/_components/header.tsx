@@ -3,8 +3,10 @@ import Link from "next/link";
 import React from "react";
 import NavItems from "./nav-items";
 import UserDropDown from "./user-dropdown";
+import { searchStocks } from "@/lib/actions/finnhub.actions";
 
-export default function Header({ user }: { user: User }) {
+export default async function Header({ user }: { user: User }) {
+  const initialStocks = await searchStocks();
   return (
     <header className="sticky top-0 bg-accent z-10">
       <div className="px-10 py-4 flex items-center justify-between">
@@ -12,8 +14,8 @@ export default function Header({ user }: { user: User }) {
           <Image src={"/logo.svg"} alt="logo" width={34} height={34} />
           <span className="text-2xl font-black font-sans">Growix</span>
         </Link>
-        <nav className="hidden md:block">
-          <NavItems />
+        <nav className="hidden sm:block">
+          <NavItems initialStocks={initialStocks} />
         </nav>
         <UserDropDown user={user} />
       </div>
