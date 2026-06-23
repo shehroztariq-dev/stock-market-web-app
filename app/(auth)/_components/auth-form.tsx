@@ -39,10 +39,9 @@ export default function AuthForm({ type }: AuthFormProps) {
   // const { data: user, isPending } = authClient.useSession(); // 👈 destructure
   const formSchema = authFormSchema(type);
   const {
-    register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

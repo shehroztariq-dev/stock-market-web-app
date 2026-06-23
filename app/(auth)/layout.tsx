@@ -1,4 +1,5 @@
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -7,6 +8,7 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const auth = await getAuth();
   const session = await auth?.api.getSession({ headers: await headers() });
   if (session?.user) redirect("/");
   return <main className="min-h-screen">{children}</main>;
