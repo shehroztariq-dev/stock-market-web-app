@@ -142,14 +142,14 @@ export const getFormattedTodayDate = () =>
 export const authFormSchema = (type: string) =>
   z.object({
     // sign up
-    fullName: type === "sign-in" ? z.string().optional() : z.string().min(3),
-    country: type === "sign-in" ? z.string().optional() : z.string().max(50),
+    fullName: type === "sign-up" ? z.string().min(3) : z.string().optional(),
+    country: type === "sign-up" ? z.string().max(50) : z.string().optional(),
     investmentGoals:
-      type === "sign-in" ? z.string().optional() : z.string().min(2).max(50),
+      type === "sign-up" ? z.string().min(2).max(50) : z.string().optional(),
     riskTolerance:
-      type === "sign-in" ? z.string().optional() : z.string().min(3).max(6),
+      type === "sign-up" ? z.string().min(3).max(6) : z.string().optional(),
     preferredIndustry:
-      type === "sign-in" ? z.string().optional() : z.string().min(3),
+      type === "sign-up" ? z.string().min(3) : z.string().optional(),
     // both
     email: z.string(),
     password: z.string().min(8),

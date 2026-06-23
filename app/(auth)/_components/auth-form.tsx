@@ -60,11 +60,11 @@ export default function AuthForm({ type }: AuthFormProps) {
     try {
       console.log(data);
       if (type === "sign-up") {
-        const result = await signUpWithEmail(data);
+        const result = await signUpWithEmail(data as SignUpFormData);
         if (result.success) router.push("/");
       }
       if (type === "sign-in") {
-        const result = await signInWithEmail(data);
+        const result = await signInWithEmail(data as SignInFormData);
         if (result.success) router.push("/");
       }
     } catch (e) {
