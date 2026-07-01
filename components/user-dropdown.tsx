@@ -1,5 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ChevronDown, LayoutDashboard, Loader2, LogOut, Star } from "lucide-react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,16 +15,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import NavItems from "./nav-items";
 import { signOut } from "@/lib/actions/auth.actions";
 
 export default function UserDropDown({ user }: { user: User }) {
   const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+  const initial = user.name?.trim()?.[0]?.toUpperCase() || "U";
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push("/sign-in");
+    setSigningOut(true);
+    const result = await signOut();
+    if (!result.success) {
+      setSigningOut(false);
+      toast.error(result.error);
+      return;
+    }
+    router.replace("/sign-in");
+    router.refresh();
   };
 
   return (
@@ -27,41 +39,56 @@ export default function UserDropDown({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-2 hover:bg-transparent">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-cyan-900 text-gray-200">
-              {user.name[0]}
+          aria-label="Account menu"
+          className="h-9 gap-2 px-1.5 sm:px-2">
+          <Avatar className="size-7">
+            <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+              {initial}
             </AvatarFallback>
           </Avatar>
-
-          <span className="hidden md:block text-sm font-medium">
+          <span className="hidden max-w-32 truncate text-sm font-medium md:block">
             {user.name}
           </span>
+          <ChevronDown className="hidden opacity-60 md:block" />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex flex-col">
-            <span className="font-medium">{user.name}</span>
-            <span className="text-xs text-muted-foreground">{user.email}</span>
-          </div>
+      <DropdownMenuContent align="end" className="w-60">
+        <DropdownMenuLabel className="flex flex-col font-normal">
+          <span className="truncate font-medium text-foreground">
+            {user.name}
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            {user.email}
+          </span>
         </DropdownMenuLabel>
-
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => router.push("/profile")}>
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/")}>
-          Dashboard
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/search")}>
-          Search
-        </DropdownMenuItem>
+        {/* Primary navigation lives here on small screens */}
+        <div className="md:hidden">
+          <DropdownMenuItem asChild>
+            <Link href="/">
+              <LayoutDashboard /> Dashboard
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/watchlist">
+              <Star /> Watchlist
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+        </div>
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+        <DropdownMenuItem
+          variant="destructive"
+          disabled={signingOut}
+          onSelect={(e) => {
+            e.preventDefault();
+            void handleSignOut();
+          }}>
+          {signingOut ? <Loader2 className="animate-spin" /> : <LogOut />}
+          Sign out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

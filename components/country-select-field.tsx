@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Control, Controller, FieldError, FieldValues } from "react-hook-form";
 import {
   Popover,
@@ -31,16 +31,17 @@ type CountrySelectProps<T extends FieldValues = FieldValues> = {
 };
 
 const CountrySelect = ({
+  id,
   value,
   onChange,
 }: {
+  id: string;
   value: string;
   onChange: (value: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
 
-  // Get country options with flags
-  const countries = countryList().getData();
+  const countries = useMemo(() => countryList().getData(), []);
 
   // Helper function to get flag emoji
   const getFlagEmoji = (countryCode: string) => {
@@ -55,10 +56,12 @@ const CountrySelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full ">
+          id={id}
+          className="h-10 w-full justify-between px-2.5 font-normal">
           {value ? (
             <span className="flex items-start gap-2">
               <span>{getFlagEmoji(value)}</span>
@@ -70,14 +73,14 @@ const CountrySelect = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0" align="start">
         <Command>
           <CommandInput placeholder="Search countries..." className="w-full" />
-          <CommandEmpty className="country-select-empty">
+          <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
             No country found.
           </CommandEmpty>
-          <CommandList className="max-h-60  scrollbar-hide-default">
-            <CommandGroup className="">
+          <CommandList className="max-h-60">
+            <CommandGroup>
               {countries.map((country) => (
                 <CommandItem
                   key={country.value}
@@ -86,10 +89,10 @@ const CountrySelect = ({
                     onChange(country.value);
                     setOpen(false);
                   }}
-                  className="country-select-item">
+                  >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4 text-yellow-500",
+                      "mr-2 h-4 w-4 text-primary",
                       value === country.value ? "opacity-100" : "opacity-0",
                     )}
                   />
@@ -116,9 +119,7 @@ export const CountrySelectField = <T extends FieldValues = FieldValues>({
 }: CountrySelectProps<T>) => {
   return (
     <div className="space-y-2">
-      <Label htmlFor={name} className="form-label">
-        {label}
-      </Label>
+      <Label htmlFor={name}>{label}</Label>
       <Controller
         name={name as any}
         control={control}
@@ -126,11 +127,11 @@ export const CountrySelectField = <T extends FieldValues = FieldValues>({
           required: required ? `Please select ${label.toLowerCase()}` : false,
         }}
         render={({ field }) => (
-          <CountrySelect value={field.value} onChange={field.onChange} />
+          <CountrySelect id={name} value={field.value} onChange={field.onChange} />
         )}
       />
-      {error && <p className="text-sm text-red-500">{error.message}</p>}
-      <p className="text-xs text-gray-500">
+      {error && <p role="alert" className="text-sm text-destructive">{error.message}</p>}
+      <p className="text-xs text-muted-foreground">
         Helps us show market data and news relevant to you.
       </p>
     </div>

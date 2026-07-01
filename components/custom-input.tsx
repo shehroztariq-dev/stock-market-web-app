@@ -1,3 +1,9 @@
+"use client";
+
+import { useState } from "react";
+import { Control, Controller, FieldPath } from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react";
+import z from "zod";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,25 +14,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { authFormSchema } from "@/lib/utils";
-import { Control, Controller, FieldPath } from "react-hook-form";
-import z from "zod";
 
-const formSchema = authFormSchema("sign-up");
+type FormValues = z.infer<ReturnType<typeof authFormSchema>>;
 
-type Option = {
-  value: string;
-  label: string;
-};
+type Option = { value: string; label: string };
 
 interface CustomInputProps {
-  control: Control<z.infer<typeof formSchema>>;
-  name: FieldPath<z.infer<typeof formSchema>>;
+  control: Control<FormValues>;
+  name: FieldPath<FormValues>;
   label: string;
   placeholder?: string;
   /** "input" | "select" */
   type?: "input" | "select";
   /** HTML input type (text, email, password, tel, etc.) */
   inputType?: string;
+  autoComplete?: string;
   options?: readonly Option[];
   disabled?: boolean;
 }
@@ -38,9 +40,13 @@ export default function CustomInput({
   placeholder,
   type = "input",
   inputType = "text",
+  autoComplete = "off",
   options,
   disabled = false,
 }: CustomInputProps) {
+  const [revealed, setRevealed] = useState(false);
+  const isPassword = inputType === "password";
+
   return (
     <Controller
       control={control}
@@ -50,15 +56,36 @@ export default function CustomInput({
           <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
 
           {type === "input" && (
-            <Input
-              {...field}
-              id={field.name}
-              type={inputType}
-              aria-invalid={fieldState.invalid}
-              autoComplete={inputType === "password" ? "new-password" : "off"}
-              placeholder={placeholder}
-              disabled={disabled}
-            />
+            <div className="relative">
+              <Input
+                {...field}
+                value={field.value ?? ""}
+                id={field.name}
+                type={isPassword && revealed ? "text" : inputType}
+                aria-invalid={fieldState.invalid}
+                aria-describedby={
+                  fieldState.invalid ? `${field.name}-error` : undefined
+                }
+                autoComplete={autoComplete}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={isPassword ? "h-10 pr-10" : "h-10"}
+              />
+              {isPassword && (
+                <button
+                  type="button"
+                  onClick={() => setRevealed((v) => !v)}
+                  aria-label={revealed ? "Hide password" : "Show password"}
+                  aria-pressed={revealed}
+                  className="absolute top-1/2 right-2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+                  {revealed ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </button>
+              )}
+            </div>
           )}
 
           {type === "select" && (
@@ -66,7 +93,7 @@ export default function CustomInput({
               value={field.value ?? ""}
               onValueChange={field.onChange}
               disabled={disabled}>
-              <SelectTrigger>
+              <SelectTrigger id={field.name} className="h-10 w-full">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
               <SelectContent>
@@ -80,7 +107,9 @@ export default function CustomInput({
           )}
 
           {fieldState.invalid && fieldState.error && (
-            <FieldError errors={[fieldState.error]} />
+            <div id={`${field.name}-error`}>
+              <FieldError errors={[fieldState.error]} />
+            </div>
           )}
         </Field>
       )}

@@ -1,46 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Toaster } from "sonner";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Growex",
+  title: { default: "Growex", template: "%s · Growex" },
   description:
-    "Track real-time stock prices, get personilzed alerts and explore detailed company insights",
+    "Track real-time stock prices, get personalized news digests and explore detailed company insights.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#050505",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={cn(
-        "dark h-full",
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}>
-      <body className="min-h-full flex flex-col">
+      className={cn("dark h-full", GeistSans.variable, GeistMono.variable)}>
+      <body className="flex min-h-full flex-col">
         {children}
-        <Toaster />
+        <Toaster position="top-center" />
       </body>
     </html>
   );

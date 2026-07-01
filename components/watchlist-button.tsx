@@ -1,9 +1,14 @@
 "use client";
-import React, { useMemo, useState } from "react";
 
-// Minimal WatchlistButton implementation to satisfy page requirements.
-// This component focuses on UI contract only. It toggles local state and
-// calls onWatchlistChange if provided. Styling hooks match globals.css.
+import { useState, useTransition } from "react";
+import { Loader2, Star, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/lib/actions/watchlist.actions";
+import { cn } from "@/lib/utils";
 
 const WatchlistButton = ({
   symbol,
@@ -14,71 +19,75 @@ const WatchlistButton = ({
   onWatchlistChange,
 }: WatchlistButtonProps) => {
   const [added, setAdded] = useState<boolean>(!!isInWatchlist);
+  const [pending, startTransition] = useTransition();
 
-  const label = useMemo(() => {
-    if (type === "icon") return added ? "" : "";
-    return added ? "Remove from Watchlist" : "Add to Watchlist";
-  }, [added, type]);
+  const toggle = (e?: React.SyntheticEvent) => {
+    // Used inside clickable rows / list items.
+    e?.preventDefault();
+    e?.stopPropagation();
+    if (pending) return;
 
-  const handleClick = () => {
     const next = !added;
-    setAdded(next);
-    onWatchlistChange?.(symbol, next);
+    setAdded(next); // optimistic
+
+    startTransition(async () => {
+      const result = next
+        ? await addToWatchlist(symbol, company)
+        : await removeFromWatchlist(symbol);
+
+      if (!result.success) {
+        setAdded(!next); // roll back
+        toast.error(result.error);
+        return;
+      }
+      toast.success(
+        next ? `${symbol} added to your watchlist` : `${symbol} removed`,
+      );
+      onWatchlistChange?.(symbol, next);
+    });
   };
+
+  const label = added ? `Remove ${symbol} from watchlist` : `Add ${symbol} to watchlist`;
 
   if (type === "icon") {
     return (
       <button
-        title={
-          added
-            ? `Remove ${symbol} from watchlist`
-            : `Add ${symbol} to watchlist`
-        }
-        aria-label={
-          added
-            ? `Remove ${symbol} from watchlist`
-            : `Add ${symbol} to watchlist`
-        }
-        className={`watchlist-icon-btn ${added ? "watchlist-icon-added" : ""}`}
-        onClick={handleClick}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill={added ? "#FACC15" : "none"}
-          stroke="#FACC15"
-          strokeWidth="1.5"
-          className="watchlist-star">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.385a.563.563 0 00-.182-.557L3.04 10.385a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345l2.125-5.111z"
+        type="button"
+        title={label}
+        aria-label={label}
+        aria-pressed={added}
+        disabled={pending}
+        onClick={toggle}
+        className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-60">
+        {pending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Star
+            className={cn("size-4", added && "fill-primary text-primary")}
           />
-        </svg>
+        )}
       </button>
     );
   }
 
   return (
-    <button
-      className={`watchlist-btn ${added ? "watchlist-remove" : ""}`}
-      onClick={handleClick}>
-      {showTrashIcon && added ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-5 h-5 mr-2">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 4v6m4-6v6m4-6v6"
-          />
-        </svg>
-      ) : null}
-      <span>{label}</span>
-    </button>
+    <Button
+      type="button"
+      size="lg"
+      variant={added ? "outline" : "default"}
+      aria-pressed={added}
+      disabled={pending}
+      onClick={toggle}
+      className="h-10 w-full px-4 text-sm font-semibold sm:w-auto">
+      {pending ? (
+        <Loader2 className="animate-spin" />
+      ) : showTrashIcon && added ? (
+        <Trash2 />
+      ) : (
+        <Star className={cn(added && "fill-primary text-primary")} />
+      )}
+      {added ? "In your watchlist" : "Add to watchlist"}
+    </Button>
   );
 };
 

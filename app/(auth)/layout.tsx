@@ -1,8 +1,6 @@
-// import { auth } from "@/lib/auth";
-import { getAuth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSessionUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-// app/(auth)/layout.tsx
+
 export const dynamic = "force-dynamic";
 
 export default async function AuthLayout({
@@ -10,8 +8,7 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const auth = await getAuth();
-  const session = await auth?.api.getSession({ headers: await headers() });
-  if (session?.user) redirect("/");
+  const user = await getSessionUser();
+  if (user) redirect("/");
   return <main className="min-h-screen">{children}</main>;
 }

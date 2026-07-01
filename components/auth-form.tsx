@@ -1,47 +1,39 @@
 "use client";
 
 import { useState } from "react";
-
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import z from "zod";
 
 import BrandLogo from "./brand-logo";
 import CustomInput from "./custom-input";
-
+import { CountrySelectField } from "./country-select-field";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
-
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import z from "zod";
-import { authFormSchema } from "@/lib/utils";
+import { signInWithEmail, signUpWithEmail } from "@/lib/actions/auth.actions";
 import {
   INVESTMENT_GOALS,
   PREFERRED_INDUSTRIES,
   RISK_TOLERANCE_OPTIONS,
 } from "@/lib/constants";
-import { CountrySelectField } from "./country-select-field";
-import { signInWithEmail, signUpWithEmail } from "@/lib/actions/auth.actions";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { authFormSchema } from "@/lib/utils";
 
-// import { authClient } from "@/lib/auth/auth-client";
-// import { redirect } from "next/navigation";
+type AuthFormProps = { type: "sign-in" | "sign-up" };
 
-type AuthFormProps = {
-  type: "sign-in" | "sign-up";
-};
-
-// AuthForm.tsx
 export default function AuthForm({ type }: AuthFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  // const { data: user, isPending } = authClient.useSession(); // 👈 destructure
+  const isSignUp = type === "sign-up";
+  const [formError, setFormError] = useState<string | null>(null);
   const formSchema = authFormSchema(type);
+
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,56 +46,62 @@ export default function AuthForm({ type }: AuthFormProps) {
       preferredIndustry: "Technology",
     },
   });
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    setFormError(null);
     try {
-      console.log(data);
-      if (type === "sign-up") {
-        const result = await signUpWithEmail(data as SignUpFormData);
-        if (result.success) router.push("/");
+      const result = isSignUp
+        ? await signUpWithEmail(data as SignUpFormData)
+        : await signInWithEmail(data as SignInFormData);
+
+      if (!result.success) {
+        setFormError(result.error);
+        toast.error(isSignUp ? "Sign up failed" : "Sign in failed", {
+          description: result.error,
+        });
+        return;
       }
-      if (type === "sign-in") {
-        const result = await signInWithEmail(data as SignInFormData);
-        if (result.success) router.push("/");
-      }
-    } catch (e) {
-      console.log(e);
-      toast.error("Sign up failed", {
-        description:
-          e instanceof Error ? e.message : "Failed to create an account",
-      });
-    } finally {
-      setIsLoading(false);
+
+      toast.success(isSignUp ? "Welcome to Growex!" : "Welcome back!");
+      router.replace("/");
+      router.refresh();
+    } catch {
+      const message = "Something went wrong. Check your connection and try again.";
+      setFormError(message);
+      toast.error(message);
     }
   };
 
   return (
-    <div className="flex justify-center max-w-full items-center mt-4">
-      <div className="flex flex-col gap-4 w-full max-w-xl">
-        <header className="flex flex-col gap-4">
-          <BrandLogo />
-          <div>
-            <h1 className="text-lg font-bold">
-              {type === "sign-in" ? "Sign In" : "Sign Up"}
-            </h1>
-            <p className="text-[14px] font-normal text-gray-600">
-              {"Please enter your details"}
-            </p>
-          </div>
-        </header>
+    <div className="flex min-h-screen">
+      {/* Form panel */}
+      <div className="flex w-full flex-col px-6 py-8 sm:px-10 lg:w-[48%] lg:px-16">
+        <BrandLogo />
 
-        <>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold tracking-tight">
+              {isSignUp ? "Create your account" : "Welcome back"}
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {isSignUp
+                ? "Tell us a little about you to personalize your market feed."
+                : "Sign in to pick up where you left off."}
+            </p>
+          </header>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <FieldGroup>
-              {type === "sign-up" && (
+              {isSignUp && (
                 <>
                   <CustomInput
                     control={control}
-                    label="Full Name"
+                    label="Full name"
                     name="fullName"
-                    placeholder="ex:John Doe"
+                    placeholder="John Doe"
+                    autoComplete="name"
                   />
-                  <div className="grid  md:grid-cols-2 grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <CountrySelectField
                       name="country"
                       label="Country"
@@ -113,23 +111,23 @@ export default function AuthForm({ type }: AuthFormProps) {
                     />
                     <CustomInput
                       control={control}
-                      label="Preffered Industry"
+                      label="Preferred industry"
                       name="preferredIndustry"
                       type="select"
                       options={PREFERRED_INDUSTRIES}
                     />
                   </div>
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <CustomInput
                       control={control}
-                      label="Risk Tolerance"
+                      label="Risk tolerance"
                       name="riskTolerance"
                       type="select"
                       options={RISK_TOLERANCE_OPTIONS}
                     />
                     <CustomInput
                       control={control}
-                      label="Investment Goal"
+                      label="Investment goal"
                       name="investmentGoals"
                       type="select"
                       options={INVESTMENT_GOALS}
@@ -137,49 +135,91 @@ export default function AuthForm({ type }: AuthFormProps) {
                   </div>
                 </>
               )}
-              {/* Email Input */}
+
               <CustomInput
                 control={control}
                 label="Email"
                 name="email"
-                placeholder="Enter your email"
+                inputType="email"
+                placeholder="you@example.com"
+                autoComplete="email"
               />
-              {/* Password Input */}
               <CustomInput
                 control={control}
                 label="Password"
                 name="password"
-                placeholder="Enter your password"
+                inputType="password"
+                placeholder={isSignUp ? "At least 8 characters" : "Your password"}
+                autoComplete={isSignUp ? "new-password" : "current-password"}
               />
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
+
+              {formError && (
+                <p
+                  role="alert"
+                  className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {formError}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 w-full text-base font-semibold">
+                {isSubmitting ? (
+                  <>
                     <Loader2 className="animate-spin" />
-                    Loading...
-                  </span>
-                ) : type === "sign-in" ? (
-                  "Sign In"
+                    {isSignUp ? "Creating account…" : "Signing in…"}
+                  </>
+                ) : isSignUp ? (
+                  "Start your investment journey"
                 ) : (
-                  "Start Your Investment Journey"
+                  "Sign in"
                 )}
               </Button>
             </FieldGroup>
           </form>
-        </>
 
-        <footer className="flex items-center justify-center gap-1">
-          <p className="text-sm text-gray-600 font-normal">
-            {type === "sign-in"
-              ? "Don't have an account?"
-              : "Already have an account"}
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {isSignUp ? "Already have an account?" : "New to Growex?"}{" "}
+            <Link
+              href={isSignUp ? "/sign-in" : "/sign-up"}
+              className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none">
+              {isSignUp ? "Sign in" : "Create an account"}
+            </Link>
           </p>
-          <Link
-            href={type === "sign-in" ? "/sign-up" : "/sign-in"}
-            className="text-sm font-normal hover:underline">
-            {type === "sign-in" ? "Create Account" : "Sign In"}
-          </Link>
-        </footer>
+        </div>
       </div>
+
+      {/* Brand panel */}
+      <aside
+        aria-hidden
+        className="relative hidden flex-1 flex-col justify-center overflow-hidden border-l border-border bg-gray-800 p-16 lg:flex">
+        <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -left-24 size-96 rounded-full bg-teal-400/10 blur-3xl" />
+        <div className="relative max-w-md">
+          <h2 className="text-4xl leading-tight font-bold tracking-tight">
+            Markets, made clear.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            One calm place to follow the stocks you care about.
+          </p>
+          <ul className="mt-10 space-y-6">
+            {[
+              ["Live charts & heatmaps", "Real-time market overview powered by TradingView."],
+              ["A watchlist that's yours", "Save the companies you follow and see price, change and valuation at a glance."],
+              ["A daily news digest", "AI-summarized headlines for your watchlist, in your inbox."],
+            ].map(([title, body]) => (
+              <li key={title} className="flex gap-4">
+                <span className="mt-2 size-2 shrink-0 rounded-full bg-primary" />
+                <div>
+                  <p className="font-medium">{title}</p>
+                  <p className="text-sm text-muted-foreground">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
     </div>
   );
 }

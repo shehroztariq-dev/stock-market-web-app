@@ -1,10 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function BrandLogo() {
   return (
-    <div className="flex items-center justify-center gap-2">
-      <Image src="/logo.png" width={36} height={36} alt="logo" priority />
-      <p className="text-xl font-bold font-mono">Growex</p>
-    </div>
+    <Link
+      href="/"
+      className="flex w-fit items-center gap-2 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+      <Image src="/logo.svg" width={32} height={32} alt="" priority />
+      <span className="text-xl font-bold tracking-tight">Growex</span>
+    </Link>
   );
 }

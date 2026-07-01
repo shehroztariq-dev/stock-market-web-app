@@ -1,9 +1,8 @@
+import type { Metadata } from "next";
 import AuthForm from "@/components/auth-form";
 
+export const metadata: Metadata = { title: "Sign in" };
+
 export default function SignInPage() {
-  return (
-    <section>
-      <AuthForm type="sign-in" />
-    </section>
-  );
+  return <AuthForm type="sign-in" />;
 }
