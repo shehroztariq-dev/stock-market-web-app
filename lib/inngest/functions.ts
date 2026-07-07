@@ -8,8 +8,8 @@ import {
   PERSONALIZED_WELCOME_EMAIL_PROMPT,
 } from "./prompts";
 
-import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
-import { getNews } from "@/lib/actions/finnhub.actions";
+import { getWatchlistSymbolsByEmail } from "@/lib/server/watchlist";
+import { getNews } from "@/lib/finnhub";
 import { getFormattedTodayDate } from "@/lib/utils";
 
 export const sendSignUpEmail = inngest.createFunction(
@@ -132,17 +132,19 @@ export const sendDailyNewsSummary = inngest.createFunction(
     }
     // Step #4: Send Email
     await step.run("send-news-emails", async () => {
-      await Promise.all(
+      // One bad address must not stop everyone else's email.
+      const outcomes = await Promise.allSettled(
         userNewsSummaries.map(async ({ user, newsContent }) => {
-          if (!newsContent) return false;
-
-          return await sendNewsSummaryEmail({
+          if (!newsContent) return;
+          await sendNewsSummaryEmail({
             email: user.email,
             date: getFormattedTodayDate(),
             newsContent,
           });
         }),
       );
+      const failed = outcomes.filter((o) => o.status === "rejected").length;
+      if (failed > 0) console.error(`daily-news: ${failed} email(s) failed`);
     });
 
     return {

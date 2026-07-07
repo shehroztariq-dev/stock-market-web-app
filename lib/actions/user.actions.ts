@@ -1,8 +1,10 @@
-"use server";
-
+// Intentionally NOT a "use server" module: this lists every user's email and
+// must only ever be called from trusted server code (Inngest functions).
 import { connectToDatabase } from "@/db/mongoose";
 
-export const getAllUsersForNewsEmail = async () => {
+export const getAllUsersForNewsEmail = async (): Promise<
+  { id: string; email: string; name: string }[]
+> => {
   try {
     const mongoose = await connectToDatabase();
     const db = mongoose.connection.db;
@@ -11,17 +13,15 @@ export const getAllUsersForNewsEmail = async () => {
       .collection("user")
       .find(
         { email: { $exists: true, $ne: null } },
-        {
-          projection: { _id: 1, id: 1, email: 1, name: 1, country: 1 },
-        },
+        { projection: { _id: 1, id: 1, email: 1, name: 1 } },
       )
       .toArray();
     return users
       .filter((user) => user.email && user.name)
       .map((user) => ({
         id: user.id || user._id?.toString() || "",
-        email: user.email,
-        name: user.name,
+        email: user.email as string,
+        name: user.name as string,
       }));
   } catch (e) {
     console.error("Error fetching users for news email", e);

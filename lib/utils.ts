@@ -7,19 +7,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const formatTimeAgo = (timestamp: number) => {
-  const now = Date.now();
-  const diffInMs = now - timestamp * 1000; // Convert to milliseconds
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInMs = Math.max(0, Date.now() - timestamp * 1000); // timestamp is in seconds
+  const minutes = Math.floor(diffInMs / (1000 * 60));
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-  if (diffInHours > 24) {
-    const days = Math.floor(diffInHours / 24);
-    return `${days} day${days > 1 ? "s" : ""} ago`;
-  } else if (diffInHours >= 1) {
-    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
-  } else {
-    return `${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`;
-  }
+  if (days >= 1) return `${days} day${days > 1 ? "s" : ""} ago`;
+  if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  return "Just now";
 };
 
 export function delay(ms: number) {
@@ -74,22 +70,23 @@ export const calculateNewsDistribution = (symbolsCount: number) => {
 };
 
 // Check for required article fields
-export const validateArticle = (article: RawNewsArticle) =>
-  article.headline && article.summary && article.url && article.datetime;
+export const validateArticle = (article: RawNewsArticle): boolean =>
+  Boolean(article.headline && article.summary && article.url && article.datetime);
 
 // Get today's date string in YYYY-MM-DD format
 export const getTodayString = () => new Date().toISOString().split("T")[0];
+
+const truncate = (text: string, max: number) =>
+  text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
 
 export const formatArticle = (
   article: RawNewsArticle,
   isCompanyNews: boolean,
   symbol?: string,
-  index: number = 0,
-) => ({
-  id: isCompanyNews ? Date.now() + Math.random() : article.id + index,
+): MarketNewsArticle => ({
+  id: article.id,
   headline: article.headline!.trim(),
-  summary:
-    article.summary!.trim().substring(0, isCompanyNews ? 200 : 150) + "...",
+  summary: truncate(article.summary!.trim(), isCompanyNews ? 200 : 150),
   source: article.source || (isCompanyNews ? "Company News" : "Market News"),
   url: article.url!,
   datetime: article.datetime!,
@@ -99,14 +96,14 @@ export const formatArticle = (
 });
 
 export const formatChangePercent = (changePercent?: number) => {
-  if (!changePercent) return "";
+  if (changePercent === undefined || Number.isNaN(changePercent)) return "";
   const sign = changePercent > 0 ? "+" : "";
   return `${sign}${changePercent.toFixed(2)}%`;
 };
 
 export const getChangeColorClass = (changePercent?: number) => {
-  if (!changePercent) return "text-gray-400";
-  return changePercent > 0 ? "text-green-500" : "text-red-500";
+  if (!changePercent) return "text-muted-foreground";
+  return changePercent > 0 ? "text-teal-400" : "text-red-500";
 };
 
 export const formatPrice = (price: number) => {
@@ -116,14 +113,6 @@ export const formatPrice = (price: number) => {
     minimumFractionDigits: 2,
   }).format(price);
 };
-
-export const formatDateToday = new Date().toLocaleDateString("en-US", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: "UTC",
-});
 
 export const getAlertText = (alert: Alert) => {
   const condition = alert.alertType === "upper" ? ">" : "<";
@@ -139,18 +128,36 @@ export const getFormattedTodayDate = () =>
     timeZone: "UTC",
   });
 
-export const authFormSchema = (type: string) =>
-  z.object({
-    // sign up
-    fullName: type === "sign-up" ? z.string().min(3) : z.string().optional(),
-    country: type === "sign-up" ? z.string().max(50) : z.string().optional(),
-    investmentGoals:
-      type === "sign-up" ? z.string().min(2).max(50) : z.string().optional(),
-    riskTolerance:
-      type === "sign-up" ? z.string().min(3).max(6) : z.string().optional(),
-    preferredIndustry:
-      type === "sign-up" ? z.string().min(3) : z.string().optional(),
+export const authFormSchema = (type: string) => {
+  const signUp = type === "sign-up";
+  return z.object({
+    // sign up only
+    fullName: signUp
+      ? z.string().trim().min(2, "Please enter your full name").max(80)
+      : z.string().optional(),
+    country: signUp
+      ? z.string().min(2, "Please select your country").max(50)
+      : z.string().optional(),
+    investmentGoals: signUp
+      ? z.string().min(2, "Select an investment goal").max(50)
+      : z.string().optional(),
+    riskTolerance: signUp
+      ? z.string().min(3, "Select a risk tolerance").max(6)
+      : z.string().optional(),
+    preferredIndustry: signUp
+      ? z.string().min(3, "Select a preferred industry")
+      : z.string().optional(),
     // both
-    email: z.string(),
-    password: z.string().min(8),
+    email: z
+      .string()
+      .trim()
+      .min(1, "Email is required")
+      .email("Enter a valid email address"),
+    password: signUp
+      ? z
+          .string()
+          .min(8, "Password must be at least 8 characters")
+          .max(128, "Password is too long")
+      : z.string().min(1, "Password is required").max(128),
   });
+};
