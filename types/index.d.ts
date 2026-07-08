@@ -14,52 +14,11 @@ declare global {
     preferredIndustry: string;
   };
 
-  type CountrySelectProps = {
-    name: string;
-    label: string;
-    control: Control;
-    error?: FieldError;
-    required?: boolean;
-  };
-
-  type FormInputProps = {
-    name: string;
-    label: string;
-    placeholder: string;
-    type?: string;
-    register: UseFormRegister;
-    error?: FieldError;
-    validation?: RegisterOptions;
-    disabled?: boolean;
-    value?: string;
-  };
-
   type Option = {
     value: string;
     label: string;
   };
 
-  type SelectFieldProps = {
-    name: string;
-    label: string;
-    placeholder: string;
-    options: readonly Option[];
-    control: Control;
-    error?: FieldError;
-    required?: boolean;
-  };
-
-  type FooterLinkProps = {
-    text: string;
-    linkText: string;
-    href: string;
-  };
-
-  type SearchCommandProps = {
-    renderAs?: "button" | "text";
-    label?: string;
-    initialStocks: StockWithWatchlistStatus[];
-  };
 
   type WelcomeEmailData = {
     email: string;
@@ -112,8 +71,9 @@ declare global {
   };
 
   type QuoteData = {
-    c?: number;
-    dp?: number;
+    c?: number; // current price
+    d?: number; // change
+    dp?: number; // change percent
   };
 
   type ProfileData = {
@@ -122,7 +82,7 @@ declare global {
   };
 
   type FinancialsData = {
-    metric?: { [key: string]: number };
+    metric?: { [key: string]: number | undefined };
   };
 
   type SelectedStock = {
@@ -139,7 +99,7 @@ declare global {
     userId: string;
     symbol: string;
     company: string;
-    addedAt: Date;
+    addedAt: Date | string;
     currentPrice?: number;
     changePercent?: number;
     priceFormatted?: string;
@@ -169,12 +129,17 @@ declare global {
   };
 
   type SearchCommandProps = {
+    renderAs?: "button" | "text";
+    label?: string;
+    initialStocks: StockWithWatchlistStatus[];
+    className?: string;
+    /** Register the global Ctrl/Cmd+K shortcut (only one instance per page should). */
+    enableShortcut?: boolean;
+    /** Hide the text label on small screens (icon-only trigger). Default true. */
+    compact?: boolean;
+    /** Controlled open state (optional). */
     open?: boolean;
     setOpen?: (open: boolean) => void;
-    renderAs?: "button" | "text";
-    buttonLabel?: string;
-    buttonVariant?: "primary" | "secondary";
-    className?: string;
   };
 
   type AlertData = {
@@ -216,9 +181,11 @@ declare global {
     changePercent?: number;
   };
 
-  type UserForNewsEmail = Awaited<
-    ReturnType<typeof getAllUsersForNewsEmail>
-  >[number];
+  type UserForNewsEmail = {
+    id: string;
+    email: string;
+    name: string;
+  };
 }
 
 export {};
