@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Control, Controller, FieldError } from "react-hook-form";
+import { Control, Controller, FieldError, FieldValues } from "react-hook-form";
 import {
   Popover,
   PopoverContent,
@@ -22,10 +22,10 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import countryList from "react-select-country-list";
 
-type CountrySelectProps = {
+type CountrySelectProps<T extends FieldValues = FieldValues> = {
   name: string;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   error?: FieldError;
   required?: boolean;
 };
@@ -107,20 +107,20 @@ const CountrySelect = ({
   );
 };
 
-export const CountrySelectField = ({
+export const CountrySelectField = <T extends FieldValues = FieldValues>({
   name,
   label,
   control,
   error,
   required = false,
-}: CountrySelectProps) => {
+}: CountrySelectProps<T>) => {
   return (
     <div className="space-y-2">
       <Label htmlFor={name} className="form-label">
         {label}
       </Label>
       <Controller
-        name={name}
+        name={name as any}
         control={control}
         rules={{
           required: required ? `Please select ${label.toLowerCase()}` : false,
