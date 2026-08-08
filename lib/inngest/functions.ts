@@ -14,9 +14,8 @@ import { getFormattedTodayDate } from "@/lib/utils";
 
 export const sendSignUpEmail = inngest.createFunction(
   {
-    id: "signUpEmail",
+    id: "sign-up-email",
     retries: 2,
-    // triggers are now inside the config object
     triggers: [{ event: "app/user.created" }],
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
