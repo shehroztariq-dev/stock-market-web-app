@@ -6,8 +6,8 @@ import {
   COMPANY_PROFILE_WIDGET_CONFIG,
   COMPANY_FINANCIALS_WIDGET_CONFIG,
 } from "@/lib/constants";
-import TradingViewWidget from "../../_components/trading-view-widget";
 import WatchlistButton from "@/components/watchlist-button";
+import TradingViewWidget from "@/components/trading-view-widget";
 
 export default async function StockDetails({ params }: StockDetailsPageProps) {
   const { symbol } = await params;

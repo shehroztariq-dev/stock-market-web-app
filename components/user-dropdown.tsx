@@ -59,9 +59,7 @@ export default function UserDropDown({ user }: { user: User }) {
         <DropdownMenuItem onClick={() => router.push("/search")}>
           Search
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/watch-list")}>
-          WatchList
-        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>

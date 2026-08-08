@@ -1,6 +1,6 @@
 // import { auth } from "@/lib/auth";
+import Header from "@/components/header";
 import { getAuth } from "@/lib/auth";
-import Header from "./_components/header";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 

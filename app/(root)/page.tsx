@@ -1,4 +1,4 @@
-import TradingViewWidget from "./_components/trading-view-widget";
+import TradingViewWidget from "@/components/trading-view-widget";
 import {
   HEATMAP_WIDGET_CONFIG,
   MARKET_OVERVIEW_WIDGET_CONFIG,
