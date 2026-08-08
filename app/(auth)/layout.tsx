@@ -2,6 +2,8 @@
 import { getAuth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+// app/(auth)/layout.tsx
+export const dynamic = "force-dynamic";
 
 export default async function AuthLayout({
   children,
