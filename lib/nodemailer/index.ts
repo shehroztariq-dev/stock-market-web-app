@@ -23,10 +23,10 @@ export const sendWelcomeEmail = async ({
   );
 
   const mailOptions = {
-    from: `"Growix" <welcome@growix.com>`,
+    from: `"Growex" <${process.env.NODEMAILER_EMAIL}>`,
     to: email,
-    subject: "Welcome to Growix - your stock market toolikit is ready!",
-    text: "Thanks for joinning Growix",
+    subject: "Welcome to Growex - your stock market toolikit is ready!",
+    text: "Thanks for joinning Growex",
     html: htmlTemplate,
   };
 
@@ -48,7 +48,7 @@ export const sendNewsSummaryEmail = async ({
   ).replace("{{newsContent}}", newsContent);
 
   const mailOptions = {
-    from: `"Growix News" <news@growix.com>`,
+    from: `"Growex News" <${process.env.NODEMAILER_EMAIL}>`,
     to: email,
     subject: `📈 Market News Summary Today - ${date}`,
     text: `Today's market news summary from Signalist`,

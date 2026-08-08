@@ -1,6 +1,6 @@
-# Growix 📈
+# Growex 📈
 
-**Growix** is a real-time stock market tracking platform that delivers live price updates, personalized alerts, and in-depth company insights — helping users make informed investment decisions.
+**Growex** is a real-time stock market tracking platform that delivers live price updates, personalized alerts, and in-depth company insights — helping users make informed investment decisions.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
@@ -39,8 +39,8 @@
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/growix.git
-cd growix
+git clone https://github.com/<your-username>/growex.git
+cd growex
 pnpm install
 ```
 
@@ -128,7 +128,7 @@ You can trigger events from your application and monitor function executions in 
 ## Project Structure
 
 ```
-growix/
+growex/
 ├── app/              # Next.js app router pages and layouts
 ├── components/       # Reusable UI components (Shadcn-based)
 ├── lib/              # Utilities, database, and auth config

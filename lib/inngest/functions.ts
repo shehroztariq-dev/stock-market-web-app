@@ -47,7 +47,7 @@ export const sendSignUpEmail = inngest.createFunction(
 
       const introText =
         (part && "text" in part ? part.text : null) ||
-        "Thanks for joining Growix. You now have the tools to track markets and make smarter moves.";
+        "Thanks for joining Growex. You now have the tools to track markets and make smarter moves.";
 
       const {
         data: { email, name },

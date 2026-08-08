@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Growix",
+  title: "Growex",
   description:
     "Track real-time stock prices, get personilzed alerts and explore detailed company insights",
 };

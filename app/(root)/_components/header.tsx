@@ -12,7 +12,7 @@ export default async function Header({ user }: { user: User }) {
       <div className="px-10 py-4 flex items-center justify-between">
         <Link href={"/"} className="flex items-center gap-2 ">
           <Image src={"/logo.svg"} alt="logo" width={34} height={34} />
-          <span className="text-2xl font-black font-sans">Growix</span>
+          <span className="text-2xl font-black font-sans">Growex</span>
         </Link>
         <nav className="hidden sm:block">
           <NavItems initialStocks={initialStocks} />
